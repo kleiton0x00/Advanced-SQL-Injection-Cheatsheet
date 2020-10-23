@@ -14,3 +14,6 @@ This repository contains a advanced methodology of all types of SQL Injection.
 - [Boolean-based (content-based) Blind SQLi]()  
 - [Time-based Blind SQLi]()  
 - [Out-of-band SQLi]()  
+
+### PostgreSQL Injection Cheatsheet
+- [Error-based SQLi]()
