@@ -15,7 +15,7 @@ This repository contains a advanced methodology of all types of SQL Injection.
 - [Out-of-band SQLi]()  
 
 ### PostgreSQL Injection Cheatsheet
-- [Error-based SQLi]()
+- [Error-based SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Postgres%20-%20Error%20Based%20SQLi)
 
 ### Oracle Injection Cheatsheet
 
