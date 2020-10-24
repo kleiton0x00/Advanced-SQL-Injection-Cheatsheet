@@ -30,7 +30,7 @@ Website might loads successfuly, but it might shows error also
 ```http://domain.com/index.php?id=1+--+```  
 Website might loads successfuly, but it might shows error also
 
-## Bypassing WAF to detect the injection point (if the first methodology didn't work)
+## Bypassing WAF to detect the vulnerability (if the first methodology didn't work)
 
 In some cases, WAF won't let you to cause errors on the website, so sending special queries might be needed to bypass WAF.
 
