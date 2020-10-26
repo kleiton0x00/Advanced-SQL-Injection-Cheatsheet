@@ -137,6 +137,8 @@ And so on...
 
 **Retrieve column name**
 
+Since we know the length of column name is 4, let's find out the characters one by one.
+
 Given below query will test if the first character of the first column name is ascii 101 (e):  
 ```' AND (ascii(substr((select username from users limit 0,1) ,1,1))) > 100 --+```  
 Website doesn't load properly, first char is not **e**.  
@@ -162,5 +164,5 @@ Website doesn't load properly, fourth char is **s**.
 3rd character: 115 -> **s**  
 4th character: 115 -> **s**  
 
-All 4 charachters combined together will be the first table name: **pass**
+All 4 charachters combined together will be the column table name: **pass**
 
