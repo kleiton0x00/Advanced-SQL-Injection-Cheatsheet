@@ -43,4 +43,6 @@ and so on...
 
 ## WAF blocks retrieving information from database()
 
-Simply replace ```database()``` with ```database/*badd*//**/()```
+Simply replace ```database()``` with one of the following payload:  
+```database/*badd*//**/()```  
+```database%23%0A(%23%0A)```
