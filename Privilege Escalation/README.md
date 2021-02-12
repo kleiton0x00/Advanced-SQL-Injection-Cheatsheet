@@ -1,4 +1,4 @@
-# MySQL Privilege Escalation
+# SQL Privilege Escalation
 
 ## Identifying the vulnerability
 
