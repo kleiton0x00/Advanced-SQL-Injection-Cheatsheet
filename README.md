@@ -16,6 +16,7 @@ This repository contains a advanced methodology of all types of SQL Injection.
 - [Boolean-based (content-based) Blind SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/MySQL%20-%20Boolean%20Based%20Blind%20SQLi)  
 
 - [Stabilise & Whitespace Filter Bypass](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/MySQL%20-%20Stabilise%20%26%20Bypass/README.md)
+- [Privilege Escalation](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Privilege%20Escalation/README.md)
 
 ### PostgreSQL Injection Cheatsheet
 - [Error- or UNION-based SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Postgres%20-%20Error%20Based%20SQLi)
