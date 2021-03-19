@@ -12,6 +12,9 @@ Error message shows up: ```You have an error in your SQL syntax; check the manua
 ```http://domain.com/index.php?id=1\'```   
 Error message shows up: ```You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near...```  
 
+```http://domain.com/index.php?id=1 and 0' order by 1--+```  
+Website loads successfully
+
 ```http://domain.com/index.php?id=2-1```  
 Website loads successfully
 
