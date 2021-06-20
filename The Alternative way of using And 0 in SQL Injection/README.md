@@ -25,7 +25,7 @@ And 1-1
 And 0/1
 ```
 
-### Using **and nuliff(1336,1337)**
+### Using **and nullif(1336,1337)**
 If one arguments is different nullif(1336,1337) it return the first argument and it will consider as true.So no need to use this.But sometimes it works. Since both arguments are equal it return as null value or it's considered as false,0,null and it will valid as Bypass Method in SQL.
 
 ```
