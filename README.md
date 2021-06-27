@@ -29,3 +29,4 @@ This repository contains a advanced methodology of all types of SQL Injection.
 
 ### MSSQL Injection Cheatsheet
 - [Error- or UNION-based SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/MSSQL%20-%20Error%20Based%20SQLi/README.md)
+- [Privilege Escalation](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Privilege%20Escalation%20-%20MSSQL/README.md)
