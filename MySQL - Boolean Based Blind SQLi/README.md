@@ -28,7 +28,7 @@ Page loads successfully. Database name is 11 characters long.
 
 This method is slow, because we have to hit-or-miss for every character of the database. Let's take a look below. The below table, will help us convert ascii to string.  
 
-![ascii_table](https://imgs.chip.de/ZBgGgeBx4QyqnxIERLeIjZ0BoXg=/1200x674/filters:format(jpeg):fill(fff,true)/www.chip.de%2Fii%2F8%2F1%2F7%2F6%2F6%2F1%2F0%2F4%2FUnbenannt-41a448c7fdc8d42f.jpg)
+![ascii_table](https://www.asciitable.com/asciifull.gif)
 
 The given query will define is the first character of database name is 111 (o)  
 ```http://domain.com/index.php?id=1' AND (ascii(substr((select database()),1,1))) > 110 --+```  
