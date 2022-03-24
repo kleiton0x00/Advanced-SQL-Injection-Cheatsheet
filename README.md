@@ -16,14 +16,15 @@ This repository contains a advanced methodology of all types of SQL Injection.
   - New attacking vectors (Bypassing WAF)
     - [The Alternative way of using And 0](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/The%20Alternative%20way%20of%20using%20And%200%20in%20SQL%20Injection/README.md)
     - [The Alternative WAY of using Null](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/The%20Alternative%20way%20of%20using%20Null%20in%20SQL%20Injection/README.md)
-- [Boolean-based (content-based) Blind SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/MySQL%20-%20Boolean%20Based%20Blind%20SQLi)  
+- [Boolean-based (content-based) Blind SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/MySQL%20-%20Boolean%20Based%20Blind%20SQLi)   
 - [Time Based SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/MySQL%20-%20Time%20Based%20SQLi/README.md)
-
-- [Stabilise & Whitespace Filter Bypass](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/MySQL%20-%20Stabilise%20%26%20Bypass/README.md)
+- [Stabilise & Whitespace Filter Bypass](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/MySQL%20-%20Stabilise%20%26%20Bypass/README.md)  
+- [Local File Inclusion (LFI)](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/LFI-via-load_file-function/README.md) 
 - [Privilege Escalation](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Privilege%20Escalation/README.md)
 
 ### PostgreSQL Injection Cheatsheet
 - [Error- or UNION-based SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Postgres%20-%20Error%20Based%20SQLi)
+- [Local File Inclusion (LFI)](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/LFI-via-load_file-function/README.md)  
 - [Privilege Escalation](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Privilege%20Escalation/README.md)
 
 ### Oracle Injection Cheatsheet
