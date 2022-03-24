@@ -24,6 +24,7 @@ This repository contains a advanced methodology of all types of SQL Injection.
 
 ### PostgreSQL Injection Cheatsheet
 - [Error- or UNION-based SQLi](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Postgres%20-%20Error%20Based%20SQLi)
+- [Privilege Escalation](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/Privilege%20Escalation/README.md)
 
 ### Oracle Injection Cheatsheet
 - To be added...
