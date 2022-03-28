@@ -23,9 +23,12 @@ Since we have permission to write, we can create our own PHP Webshell, but to do
 
 ### Finding absolute path
 
-1. The most common way to find a path, is by searching the temporary path that SQL has, to do that we simply use the following query:
+1. The most common way to find a path, is by searching the temporary path that SQL has, to do that we simply use the following query, to get some absolute path directories:
 ```sql
 @@slave_load_tmpdir
+@@basedir
+@@datadir
+@@tmpdir
 ```
 
 Look at the output, you should look after a directory, something like this:
